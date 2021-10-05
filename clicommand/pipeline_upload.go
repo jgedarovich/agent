@@ -14,7 +14,9 @@ import (
 	"github.com/buildkite/agent/v3/api"
 	"github.com/buildkite/agent/v3/cliconfig"
 	"github.com/buildkite/agent/v3/env"
+	"github.com/buildkite/agent/v3/redaction"
 	"github.com/buildkite/agent/v3/retry"
+	"github.com/buildkite/agent/v3/bootstrap/shell"
 	"github.com/buildkite/agent/v3/stdin"
 	"github.com/urfave/cli"
 )
@@ -209,6 +211,11 @@ var PipelineUploadCommand = cli.Command{
 			}
 		}
 
+		src := filename
+		if src == "" {
+			src = "(stdin)"
+		}
+
 		// Parse the pipeline
 		result, err := agent.PipelineParser{
 			Env:             environ,
@@ -217,10 +224,6 @@ var PipelineUploadCommand = cli.Command{
 			NoInterpolation: cfg.NoInterpolation,
 		}.Parse()
 		if err != nil {
-			src := filename
-			if src == "" {
-				src = "(stdin)"
-			}
 			l.Fatal("Pipeline parsing of \"%s\" failed (%s)", src, err)
 		}
 
@@ -236,6 +239,34 @@ var PipelineUploadCommand = cli.Command{
 			}
 
 			return
+		}
+
+		if len(cfg.RedactedVars) > 0 {
+			needles := redaction.GetValuesToRedact(shell.StderrLogger, cfg.RedactedVars, environ.ToMap())
+
+			// buf := new(bytes.Buffer)
+			// if body != nil {
+			// 	err := json.NewEncoder(buf).Encode(body)
+			// 	if err != nil {
+			// 		return nil, err
+			// 	}
+			// }
+			serialisedPipeline, err := result.MarshalJSON()
+
+			if err != nil {
+				l.Fatal("Pipeline serialization of \"%s\" failed (%s)", src, err)
+			}
+
+			for _, needle := range needles {
+				if strings.Contains(serialisedPipeline, needle)
+					l.Fatal("Couldn't upload %q pipeline. Refusing to upload pipeline containing redacted vars. Ensure your pipeline does not include secret values or interpolated secret values", src)
+			}
+		}
+
+		for _, path := range paths {
+			if _, err := os.Stat(path); err == nil {
+				exists = append(exists, path)
+			}
 		}
 
 		// Check we have a job id set if not in dry run
