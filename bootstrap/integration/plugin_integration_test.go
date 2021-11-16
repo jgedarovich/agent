@@ -38,7 +38,7 @@ func TestRunningPlugins(t *testing.T) {
 	} else {
 		p = createTestPlugin(t, map[string][]string{
 			"environment": []string{
-				"#!/bin/bash",
+				"#!/usr/bin/env bash",
 				"export LLAMAS_ROCK=absolutely",
 				pluginMock.Path + " testing",
 			},
@@ -97,7 +97,7 @@ func TestExitCodesPropagateOutFromPlugins(t *testing.T) {
 	} else {
 		p = createTestPlugin(t, map[string][]string{
 			"environment": []string{
-				"#!/bin/bash",
+				"#!/usr/bin/env bash",
 				"exit 5",
 			},
 		})
@@ -172,7 +172,7 @@ func TestOverlappingPluginHooks(t *testing.T) {
 				}
 			} else {
 				fakeHooks[hook] = []string{
-					"#!/bin/bash",
+					"#!/usr/bin/env bash",
 					pluginMock.Path + " " + hook,
 				}
 			}

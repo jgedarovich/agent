@@ -25,7 +25,7 @@ func TestEnvironmentVariablesPassBetweenHooks(t *testing.T) {
 
 	if runtime.GOOS != "windows" {
 		var script = []string{
-			"#!/bin/bash",
+			"#!/usr/bin/env bash",
 			"export LLAMAS_ROCK=absolutely",
 		}
 
@@ -95,7 +95,7 @@ func TestHooksCanUnsetEnvironmentVariables(t *testing.T) {
 		}
 	} else {
 		var preCommand = []string{
-			"#!/bin/bash",
+			"#!/usr/bin/env bash",
 			"export LLAMAS_ROCK=absolutely",
 		}
 		if err := ioutil.WriteFile(filepath.Join(tester.HooksDir, "pre-command"),
@@ -104,7 +104,7 @@ func TestHooksCanUnsetEnvironmentVariables(t *testing.T) {
 		}
 
 		var postCommand = []string{
-			"#!/bin/bash",
+			"#!/usr/bin/env bash",
 			"unset LLAMAS_ROCK",
 		}
 		if err := ioutil.WriteFile(filepath.Join(tester.HooksDir, "post-command"),
@@ -148,7 +148,7 @@ func TestDirectoryPassesBetweenHooks(t *testing.T) {
 	}
 
 	var script = []string{
-		"#!/bin/bash",
+		"#!/usr/bin/env bash",
 		"mkdir -p ./mysubdir",
 		"export MY_CUSTOM_SUBDIR=$(cd mysubdir; pwd)",
 		"cd ./mysubdir",
@@ -184,7 +184,7 @@ func TestDirectoryPassesBetweenHooksIgnoredUnderExit(t *testing.T) {
 	}
 
 	var script = []string{
-		"#!/bin/bash",
+		"#!/usr/bin/env bash",
 		"mkdir -p ./mysubdir",
 		"export MY_CUSTOM_SUBDIR=$(cd mysubdir; pwd)",
 		"cd ./mysubdir",

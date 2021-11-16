@@ -22,7 +22,7 @@ func TestRunningHookDetectsChangedEnvironment(t *testing.T) {
 
 	if runtime.GOOS != "windows" {
 		script = []string{
-			"#!/bin/bash",
+			"#!/usr/bin/env bash",
 			"export LLAMAS=rock",
 			"export Alpacas=\"are ok\"",
 			"echo hello world",
@@ -84,7 +84,7 @@ func TestRunningHookDetectsChangedWorkingDirectory(t *testing.T) {
 
 	if runtime.GOOS != "windows" {
 		script = []string{
-			"#!/bin/bash",
+			"#!/usr/bin/env bash",
 			"mkdir mysubdir",
 			"cd mysubdir",
 			"echo hello world",

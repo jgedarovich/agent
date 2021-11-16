@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 agent_version=$(awk -F\" '/var baseVersion string = "/ {print $2}' agent/version.go)
